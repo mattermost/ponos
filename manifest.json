@@ -1,0 +1,36 @@
+{
+    "app_id": "ponos",
+    "version": "0.1.0",
+    "display_name": "Ponos",
+    "description": "Ponos is a tool which the SRE in Mattermost use for toil work",
+    "homepage_url": "https://github.com/mattermost/ponos",
+    "root_url": "",
+    "icon": "icon.png",
+    "aws_lambda": {
+        "functions": [
+            {
+                "path": "/",
+                "name": "go-function",
+                "handler": "mattermost-app-ponos",
+                "runtime": "go1.x"
+            }
+        ]
+    },
+    "http": {
+        "root_url": "http://localhost:3000"
+    },
+    "requested_permissions": [
+        "act_as_bot",
+        "act_as_user"
+    ],
+    "requested_locations": [
+        "/command"
+    ],
+    "bindings": {
+        "path": "/bindings",
+        "expand": {
+            "acting_user": "all"
+        }
+    },
+    "assets": []
+}
