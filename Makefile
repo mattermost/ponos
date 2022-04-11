@@ -26,6 +26,9 @@ DOCKER_IMAGE ?= mattermost/ponos:test
 ## Docker Build Versions
 DOCKER_BUILD_IMAGE = golang:1.16.8
 DOCKER_BASE_IMAGE = alpine:3.14.2
+
+## Tools version
+TERRAFORM_VERSION=1.1.7
 ################################################################################
 
 .PHONY: all
@@ -39,19 +42,21 @@ build-image:
 	docker build \
 	--build-arg DOCKER_BUILD_IMAGE=$(DOCKER_BUILD_IMAGE) \
 	--build-arg DOCKER_BASE_IMAGE=$(DOCKER_BASE_IMAGE) \
-	. -f build/Dockerfile -t $(CHAOS_ENGINE_IMAGE)
+	. -f build/Dockerfile -t $(DOCKER_IMAGE)
 
 .PHONY: build-linux
 ## build-linux: builds linux binary
 build-linux:
-	@echo Building binary for linux
-	GOOS=linux GOARCH=amd64 CGO_ENABLED=1 $(GO) build -ldflags $(LDFLAGS) -gcflags all=-trimpath=$(PWD) -asmflags all=-trimpath=$(PWD) -a -installsuffix cgo -o build/_output/bin/ponos-linux-amd64 ./cmd
+	@echo Building binary for linux for App
+	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 $(GO) build -ldflags $(LDFLAGS) -gcflags all=-trimpath=$(PWD) -asmflags all=-trimpath=$(PWD) -a -installsuffix cgo -o build/_output/bin/ponos-app-linux-amd64 ./cmd/app
+	@echo Building binary for linux for Server
+	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 $(GO) build -ldflags $(LDFLAGS) -gcflags all=-trimpath=$(PWD) -asmflags all=-trimpath=$(PWD) -a -installsuffix cgo -o build/_output/bin/ponos-server-linux-amd64 ./cmd/server
 
 .PHONY: build
 ## build: build the executable
 build:
 	@echo Building for local use only
-	$(GO) build -o build/_output/bin/ponos ./cmd
+	$(GO) build -o build/_output/bin/ponos ./cmd/
 
 .PHONY: check-modules
 ## check-modules: Check outdated modules
@@ -73,10 +78,18 @@ clean:
 ## dist-aws: creates the bundle file for AWS Lambda deployments
 dist: build-linux
 	@echo Building dist for AWS Lambda
-	cp -r cmd/static dist
-	cp cmd/manifest.json dist/
-	cp build/_output/bin/ponos-linux-amd64 dist/ponos
+	cp -r static dist
+	cp manifest.json dist/
+	cp build/_output/bin/ponos-app-linux-amd64 dist/ponos
 	cd dist/; zip -qr go-function ponos; zip -r bundle.zip go-function.zip manifest.json static
+
+.PHONY: get-terraform
+## get-terraform: download terraform only if it's not available. Used in the docker build
+get-terraform: 
+	@if [ ! -f build/terraform ]; then \
+		curl -Lo build/terraform.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && cd build && unzip terraform.zip &&\
+		chmod +x terraform && rm terraform.zip;\
+	fi
 
 .PHONY: vet
 ## govet: Runs govet against all packages.

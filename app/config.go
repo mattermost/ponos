@@ -1,8 +1,6 @@
 package app
 
 import (
-	"fmt"
-
 	"github.com/pkg/errors"
 )
 
@@ -22,17 +20,18 @@ func (a AppConfig) Validate() error {
 	return nil
 }
 
+// StoreAppConfig store the config of the app in KV store
 func (creq CallRequest) StoreAppConfig(cfg *AppConfig) error {
 	asBot := creq.AsBot()
 
-	status, err := asBot.KVSet("config", "", cfg)
+	_, err := asBot.KVSet("config", "", cfg)
 	if err != nil {
 		return errors.Wrap(err, "failed to save the app config")
 	}
-	fmt.Print(status)
 	return nil
 }
 
+// GetAppConfig return store the config of the app from KV store
 func (creq CallRequest) GetAppConfig() (*AppConfig, error) {
 	asBot := creq.AsBot()
 
@@ -44,6 +43,7 @@ func (creq CallRequest) GetAppConfig() (*AppConfig, error) {
 	return cfg, nil
 }
 
+// DeleteAppConfig deletes the config of the app from KV store
 func (creq CallRequest) DeleteAppConfig() error {
 	asBot := creq.AsBot()
 	err := asBot.KVDelete("p", "config")
@@ -58,6 +58,7 @@ type UsersAccess struct {
 	UserIDS []string `json:"user_ids"`
 }
 
+// StoreUserAccess stores the user access config in KV store
 func (creq CallRequest) StoreUserAccess(userID string) error {
 	ua, err := creq.GetUserAccess()
 	if err != nil {
@@ -73,6 +74,7 @@ func (creq CallRequest) StoreUserAccess(userID string) error {
 	return nil
 }
 
+// GetUserAccess returns the user access config from KV store
 func (creq CallRequest) GetUserAccess() (*UsersAccess, error) {
 	asBot := creq.AsBot()
 

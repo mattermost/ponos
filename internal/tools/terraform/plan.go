@@ -7,6 +7,7 @@ package terraform
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -20,16 +21,11 @@ type terraformOutput struct {
 
 // Init invokes terraform init.
 func (c *Cmd) Init(remoteKey string) error {
-	// err := ioutil.WriteFile(path.Join(c.dir, backendFilename), []byte(backendFile), 0644)
-	// if err != nil {
-	// 	return errors.Wrap(err, "unable to write terraform backend state file")
-	// }
-
 	_, _, err := c.run(
 		"init",
-		// Arg("backend-config", fmt.Sprintf("bucket=%s", c.remoteStateBucket)),
-		// Arg("backend-config", fmt.Sprintf("key=%s/%s", remoteStateDirectory, remoteKey)),
-		// Arg("backend-config", fmt.Sprintf("region=%s", os.Getenv("AWS_REGION"))),
+		Arg("backend-config", fmt.Sprintf("bucket=%s", c.remoteStateBucket)),
+		Arg("backend-config", fmt.Sprintf("key=%s/%s", remoteStateDirectory, remoteKey)),
+		Arg("backend-config", fmt.Sprintf("region=%s", os.Getenv("AWS_REGION"))),
 	)
 	if err != nil {
 		return errors.Wrap(err, "failed to invoke terraform init")

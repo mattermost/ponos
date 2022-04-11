@@ -12,9 +12,6 @@ import (
 )
 
 const (
-	// backendFilename is the backend terraform base configuration for S3 remote
-	// state.
-	backendFilename = "backend.tf"
 	// remoteStateDirectory is the directory inside of the S3 bucket that will
 	// contain all of the terraform remote state.
 	remoteStateDirectory = "terraform"
