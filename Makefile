@@ -9,12 +9,9 @@ GO ?= go
 GO_TEST_FLAGS ?= -race
 
 ## Binaries.
-GO_INSTALL = ./scripts/go_install.sh
 TOOLS_BIN_DIR := $(abspath bin)
 
-GOLANGCILINT_VER := v1.45.2
-GOLANGCILINT_BIN := golangci-lint
-GOLANGCILINT_GEN := $(TOOLS_BIN_DIR)/$(GOLANGCILINT_BIN)
+GO_IMAGE_LINT = "golangci/golangci-lint:v1.45.0"
 
 OUTDATED_VER := master
 OUTDATED_BIN := go-mod-outdated
@@ -60,9 +57,9 @@ build:
 
 .PHONY: check-modules
 ## check-modules: Check outdated modules
-check-modules: $(OUTDATED_GEN) #
+check-modules:
 	@echo Checking outdated modules
-	$(GO) list -u -m -json all | $(OUTDATED_GEN) -update -direct
+	$(GO) list -u -m -json all | docker run --rm -i psampaz/go-mod-outdated
 
 .PHONY: check-style
 ## check-style: Runs govet and gofmt against all packages.
@@ -106,9 +103,9 @@ push-docker-pr:
 
 .PHONY: lint
 ## lint: Run golangci-lint on codebase
-lint: $(GOLANGCILINT_GEN)
+lint:
 	@echo Running lint with GolangCI
-	$(GOLANGCILINT_GEN)  run ./...
+	docker run --rm -v $(PWD):/app -w /app ${GO_IMAGE_LINT} golangci-lint run --timeout=1m
 
 .PHONY: push-docker
 ## push-docker: Pushes the Docker image 
@@ -128,18 +125,14 @@ test:
 	@echo Running tests
 	$(GO) test $(GO_TEST_FLAGS) ./...
 
+.PHONY: vendor
+## vendor: create a vendor folder
+vendor:
+	@echo Running vendor
+	go mod vendor
+
 .PHONY: help
 ## help: prints this help message
 help:
 	@echo "Usage:"
 	@sed -n 's/^##//p' ${MAKEFILE_LIST} | column -t -s ':' |  sed -e 's/^/ /'
-
-## --------------------------------------
-## Tooling Binaries
-## --------------------------------------
-
-$(OUTDATED_GEN): ## Build go-mod-outdated.
-	GOBIN=$(TOOLS_BIN_DIR) $(GO_INSTALL) github.com/psampaz/go-mod-outdated $(OUTDATED_BIN) $(OUTDATED_VER)
-
-$(GOLANGCILINT_GEN): ## Build golang-ci lint.
-	GOBIN=$(TOOLS_BIN_DIR) $(GO_INSTALL) github.com/golangci/golangci-lint/cmd/golangci-lint $(GOLANGCILINT_BIN) $(GOLANGCILINT_VER)

@@ -25,7 +25,7 @@ func NewService(logger log.FieldLogger) *Service {
 // CreateMigrationInfra creates the necessary AWS IAM, bucket folder
 // so the migration resources are ready to be used.
 func (s *Service) CreateMigrationInfra(dto *CustomerMigrationRequest) error {
-	s.logger.WithField("name", dto.BucketFolder).Info("starting migration infra")
+	s.logger.Info("starting migration infra")
 
 	tf, err := terraform.New(templateDirMigrations, os.Getenv("PONOS_TERRAFORM_STATE_STORE"), s.logger)
 	if err != nil {
@@ -39,14 +39,14 @@ func (s *Service) CreateMigrationInfra(dto *CustomerMigrationRequest) error {
 	if err := tf.Plan(dto.toTerraformArgs()...); err != nil {
 		return errors.Wrap(err, "failed to run Terraform plan")
 	}
-	s.logger.WithField("name", dto.BucketFolder).Info("successfully ran Terraform plan")
+	s.logger.Info("successfully ran Terraform plan")
 
 	if dto.Apply {
-		s.logger.WithField("name", dto.BucketFolder).Info("applying migration infra")
+		s.logger.Info("applying migration infra")
 		if err := tf.Apply(dto.toTerraformArgs()...); err != nil {
 			return errors.Wrap(err, "failed to apply migration infra")
 		}
-		s.logger.WithField("name", dto.BucketFolder).Info("successfully ran Terraform apply")
+		s.logger.Info("successfully ran Terraform apply")
 	}
 	return nil
 }
@@ -54,7 +54,7 @@ func (s *Service) CreateMigrationInfra(dto *CustomerMigrationRequest) error {
 // DeleteMigrationInfra creates the necessary AWS IAM, bucket folder
 // so the migration resources are total removed from our infrastructure.
 func (s *Service) DeleteMigrationInfra(dto *CustomerMigrationRequest) error {
-	s.logger.WithField("name", dto.BucketFolder).Info("destroying migration infra")
+	s.logger.Info("destroying migration infra")
 
 	tf, err := terraform.New(templateDirMigrations, os.Getenv("PONOS_TERRAFORM_STATE_STORE"), s.logger)
 	if err != nil {
@@ -68,14 +68,14 @@ func (s *Service) DeleteMigrationInfra(dto *CustomerMigrationRequest) error {
 	if err := tf.Plan(dto.toTerraformArgs()...); err != nil {
 		return errors.Wrap(err, "failed to run Terraform plan")
 	}
-	s.logger.WithField("name", dto.BucketFolder).Info("successfully ran Terraform plan")
+	s.logger.Info("successfully ran Terraform plan")
 
 	if dto.Apply {
-		s.logger.WithField("name", dto.BucketFolder).Info("destroying migration infra")
+		s.logger.Info("destroying migration infra")
 		if err := tf.Destroy(dto.toTerraformArgs()...); err != nil {
 			return errors.Wrap(err, "failed to apply migration infra")
 		}
-		s.logger.WithField("name", dto.BucketFolder).Info("successfully ran Terraform destroy")
+		s.logger.Info("successfully ran Terraform destroy")
 	}
 	return nil
 }

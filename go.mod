@@ -9,10 +9,12 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/mattermost/mattermost-cloud v0.54.0
 	github.com/mattermost/mattermost-plugin-apps v0.7.1-0.20220401115741-dcc90711bc29
+	github.com/mattermost/mattermost-server/v6 v6.0.0-20220315170027-7710a2fe3741
 	github.com/oklog/oklog v0.3.2
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/viper v1.10.1
+	go.uber.org/zap v1.19.1
 )
 
 require (
@@ -30,7 +32,6 @@ require (
 	github.com/cncf/xds/go v0.0.0-20211130200136-a8f946100490 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
-	github.com/disintegration/imaging v1.6.2 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/dyatlov/go-opengraph v0.0.0-20210112100619-dae8665a5b09 // indirect
 	github.com/emicklei/go-restful v2.11.2+incompatible // indirect
@@ -76,12 +77,9 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattermost/go-i18n v1.11.1-0.20211013152124-5c415071e404 // indirect
 	github.com/mattermost/ldap v0.0.0-20201202150706-ee0e6284187d // indirect
-	github.com/mattermost/logr v1.0.13 // indirect
 	github.com/mattermost/logr/v2 v2.0.15 // indirect
 	github.com/mattermost/mattermost-operator v1.18.0 // indirect
 	github.com/mattermost/mattermost-plugin-api v0.0.22-0.20211210183909-beb4761e4bd3 // indirect
-	github.com/mattermost/mattermost-server/v5 v5.3.2-0.20210503144558-5c16de58a020 // indirect
-	github.com/mattermost/mattermost-server/v6 v6.0.0-20220315170027-7710a2fe3741 // indirect
 	github.com/mattermost/rotator v0.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
@@ -111,16 +109,13 @@ require (
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
-	github.com/wiggin77/cfg v1.0.2 // indirect
 	github.com/wiggin77/merror v1.0.3 // indirect
 	github.com/wiggin77/srslog v1.0.1 // indirect
 	github.com/yuin/goldmark v1.4.7 // indirect
 	go.opencensus.io v0.23.0 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.7.0 // indirect
-	go.uber.org/zap v1.19.1 // indirect
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292 // indirect
-	golang.org/x/image v0.0.0-20211028202545-6944b10bf410 // indirect
 	golang.org/x/net v0.0.0-20220225172249-27dd8689420f // indirect
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 // indirect
 	golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9 // indirect

@@ -48,7 +48,7 @@ func (a *App) commandBindings(creq app.CallRequest) []apps.Binding {
 	if err != nil {
 		return bindings
 	}
-	if len(ua.UserIDS) == 0 {
+	if len(ua.UserIDS) == 0 || !ua.IsAllowed(creq.Context.ActingUser.Id) {
 		return bindings
 	}
 
@@ -64,14 +64,4 @@ func (a *App) debugCommandBindings(creq app.CallRequest) []apps.Binding {
 	}
 
 	return []apps.Binding{}
-	// return []apps.Binding{
-	// 	{
-	// 		Label:    "debug",
-	// 		Location: "debug",
-	// 		Bindings: []apps.Binding{
-	// 			debugUserInfo.Binding(creq),
-	// 		},
-	// 		Icon: icon,
-	// 	},
-	// }
 }

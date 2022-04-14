@@ -1,0 +1,39 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    container:
+      image: golang:1.17.9
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: ci/check-style
+        run: make check-style
+
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: golang:1.17.9
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: ci/test
+        run: make test

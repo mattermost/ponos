@@ -1,6 +1,8 @@
 package app
 
 import (
+	"fmt"
+
 	"github.com/pkg/errors"
 )
 
@@ -56,6 +58,18 @@ func (creq CallRequest) DeleteAppConfig() error {
 // UsersAccess the users can use the app
 type UsersAccess struct {
 	UserIDS []string `json:"user_ids"`
+}
+
+// IsAllowed if user allowed
+func (ua *UsersAccess) IsAllowed(userID string) bool {
+	for _, id := range ua.UserIDS {
+		fmt.Println(id)
+		fmt.Println(userID)
+		if id == userID {
+			return true
+		}
+	}
+	return false
 }
 
 // StoreUserAccess stores the user access config in KV store

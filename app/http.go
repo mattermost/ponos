@@ -23,7 +23,7 @@ func (a *App) HandleCall(p string, h HandlerFunc) {
 			return
 		}
 		creq.App = *a
-		creq.App.Logger = a.Logger.With("path", creq.Path)
+		creq.App.Logger = a.Logger
 
 		cresp := h(creq)
 		if cresp.Type == apps.CallResponseTypeError {
@@ -80,7 +80,7 @@ func RequireConnectedUsers(h HandlerFunc) HandlerFunc {
 	return func(creq CallRequest) apps.CallResponse {
 		cfg, err := creq.GetAppConfig()
 		if err != nil {
-			apps.NewErrorResponse(
+			return apps.NewErrorResponse(
 				utils.NewUnauthorizedError("not able to fetch app config"))
 		}
 

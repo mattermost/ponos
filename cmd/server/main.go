@@ -17,8 +17,21 @@ import (
 )
 
 func main() {
+	provisionerURL := os.Getenv("PONOS_PROVISIONER_ADDRESS")
+	if provisionerURL == "" {
+		logger.Error("failed to start, PONOS_PROVISIONER_ADDRESS env variable is required")
+		os.Exit(1)
+		return
+	}
+	workspacesURL := os.Getenv("PONOS_WORKSPACES_ADDRESS")
+	if workspacesURL == "" {
+		logger.Error("failed to start, PONOS_WORKSPACES_ADDRESS env variable is required")
+		os.Exit(1)
+		return
+	}
 	provisionerClient := cmodel.NewClient(os.Getenv("PONOS_PROVISIONER_ADDRESS"))
-	workspaceSvc := workspaces.NewService(provisionerClient, logger)
+	workspaceClient := workspaces.NewHTTPClient(workspacesURL, http.DefaultClient)
+	workspaceSvc := workspaces.NewService(provisionerClient, workspaceClient, logger)
 	migrationsSvc := migrations.NewService(logger)
 
 	router := mux.NewRouter()
@@ -60,5 +73,5 @@ func main() {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
-	srv.Shutdown(ctx)
+	srv.Shutdown(ctx) // nolint
 }

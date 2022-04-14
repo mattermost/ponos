@@ -17,7 +17,7 @@ type PonosClient struct {
 	url    string
 }
 
-// NewClient factory method to create a Ponos Client
+// NewPonosClient factory method to create a Ponos Client
 func NewPonosClient(token, url string) *PonosClient {
 	return &PonosClient{
 		client: http.DefaultClient,

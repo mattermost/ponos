@@ -45,6 +45,7 @@ func handleDeleteCustomerMigration(c *Context, w http.ResponseWriter, r *http.Re
 	}
 
 	if err := c.MigrationsService.DeleteMigrationInfra(request); err != nil {
+		c.Logger.WithError(err).Error("failed to delete migration")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
