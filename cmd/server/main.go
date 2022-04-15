@@ -29,7 +29,7 @@ func main() {
 		os.Exit(1)
 		return
 	}
-	provisionerClient := cmodel.NewClient(os.Getenv("PONOS_PROVISIONER_ADDRESS"))
+	provisionerClient := cmodel.NewClient(provisionerURL)
 	workspaceClient := workspaces.NewHTTPClient(workspacesURL, http.DefaultClient)
 	workspaceSvc := workspaces.NewService(provisionerClient, workspaceClient, logger)
 	migrationsSvc := migrations.NewService(logger)
@@ -43,7 +43,7 @@ func main() {
 	})
 
 	srv := &http.Server{
-		Addr:           ":3001",
+		Addr:           ":3000",
 		Handler:        router,
 		ReadTimeout:    180 * time.Second,
 		WriteTimeout:   180 * time.Second,

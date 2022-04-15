@@ -30,7 +30,7 @@ func main() {
 		os.Exit(1)
 	}
 	if cfg.App.Type == apps.DeployHTTP {
-		root.AppManifest.Deploy.HTTP.RootURL = "http://192.168.68.104:3000"
+		root.AppManifest.Deploy.HTTP.RootURL = cfg.App.RootURL
 	}
 
 	r := mux.NewRouter()

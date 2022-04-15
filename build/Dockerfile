@@ -2,8 +2,8 @@
 # See LICENSE.txt for license information.
 
 # Build the mattermost ponos server
-ARG DOCKER_BUILD_IMAGE=golang:1.17
-ARG DOCKER_BASE_IMAGE=alpine:3.15
+ARG DOCKER_BUILD_IMAGE=golang:1.17.9@sha256:55759506d9a7b33b28117977170db9713903799c110db99af2c15a3f603602af
+ARG DOCKER_BASE_IMAGE=gcr.io/distroless/static@sha256:d6fa9db9548b5772860fecddb11d84f9ebd7e0321c0cb3c02870402680cc315f
 ARG BUILD_VERSION
 
 FROM ${DOCKER_BUILD_IMAGE} AS build
@@ -11,7 +11,9 @@ WORKDIR /opt/ponos
 COPY . /opt/ponos
 RUN apt-get update -yq && apt-get install -yq unzip
 RUN make get-terraform
-RUN make build-linux
+
+ENV BUILD_SERVICE=server
+RUN make build
 
 # Final Image
 FROM ${DOCKER_BASE_IMAGE}
@@ -25,20 +27,12 @@ LABEL name="Ponos" \
     io.k8s.description="Ponos is a toil work elimination tool for SRE tasks." \
     io.k8s.display-name="Mattermost Ponos"
 
-ENV PONOS=/ponos/ponos-server-linux-amd64 \
-    USER_UID=10001 \
-    USER_NAME=ponos \
-    PONOS_DIR=/ponos
+COPY --from=build /opt/ponos/build/_output/bin/ponos-server-linux-amd64 /ponos/ponos-service
+COPY --from=build /opt/ponos/build/terraform /usr/local/bin/
+COPY --from=build /opt/ponos/terraform /ponos/terraform
 
-RUN apk update && apk add libc6-compat && apk add ca-certificates
-COPY --from=build /opt/ponos/build/_output/bin/ponos-server-linux-amd644 /ponos/ponos-server-linux-amd64
-COPY --from=build /opt/ponos/build/bin /usr/local/bin
-RUN  /usr/local/bin/user_setup
+# Run as UID for nobody
+USER 65534
 
 WORKDIR /ponos
-
-USER ${USER_UID}
-
-EXPOSE  3000
-
-ENTRYPOINT ["/usr/local/bin/entrypoint"]
+ENTRYPOINT ["./ponos-service"]

@@ -1,8 +1,11 @@
 # Binary
 TAG ?= dev-local
 BUILD_HASH := $(shell git rev-parse HEAD)
+BUILD_HASH_SHORT = $(shell git rev-parse --short HEAD)
 BUILD_TIME := $(shell date -u +%Y%m%d.%H%M%S)
-LDFLAGS := '-s -w -X main.BuildVersion=${BUILD_HASH} -X main.BuildTime=${BUILD_TIME} -linkmode external -extldflags "-static"'
+LDFLAGS += -X "github.com/mattermost/ponos/function.BuildDate=$(BUILD_DATE)"
+LDFLAGS += -X "github.com/mattermost/ponos/function.BuildHash=$(BUILD_HASH)"
+LDFLAGS += -X "github.com/mattermost/ponos/function.BuildHashShort=$(BUILD_HASH_SHORT)"
 
 ## Golang
 GO ?= go
@@ -18,42 +21,52 @@ OUTDATED_BIN := go-mod-outdated
 OUTDATED_GEN := $(TOOLS_BIN_DIR)/$(OUTDATED_BIN)
 
 ## Docker
-DOCKER_IMAGE ?= mattermost/ponos:test
+DOCKER_IMAGE ?= mattermost/ponos-service:${TAG}
 
 ## Docker Build Versions
-DOCKER_BUILD_IMAGE = golang:1.16.8
-DOCKER_BASE_IMAGE = alpine:3.14.2
+DOCKER_BUILD_IMAGE = golang:1.17.9@sha256:55759506d9a7b33b28117977170db9713903799c110db99af2c15a3f603602af
+DOCKER_BASE_IMAGE = gcr.io/distroless/static@sha256:d6fa9db9548b5772860fecddb11d84f9ebd7e0321c0cb3c02870402680cc315f
 
 ## Tools version
 TERRAFORM_VERSION=1.1.7
 ################################################################################
 
 .PHONY: all
-## all: builds and runs the service
-all: run
+## all: builds and pushes the docker image
+all: lint test docker-build docker-push
 
-.PHONY: build-image
-## build-image: builds the docker image
-build-image:
-	@echo Building Ponos Docker Image
+.PHONY: build
+## build: builds linux binary
+build:
+	@echo Building binary for linux for ${BUILD_SERVICE}
+	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 $(GO) build -ldflags '$(LDFLAGS)' -trimpath -o build/_output/bin/ponos-${BUILD_SERVICE}-linux-amd64 ./cmd/${BUILD_SERVICE}
+
+.PHONY: build-local
+## build-local: build the executable for local usage
+build-local:
+	@echo Building for local use only
+	$(GO) build -o build/_output/bin/ponos-${BUILD_SERVICE} ./cmd/${BUILD_SERVICE}
+
+.PHONY: docker-build
+## docker-build: builds the docker image
+docker-build:
+	@echo Building Ponos Service Docker Image
 	docker build \
 	--build-arg DOCKER_BUILD_IMAGE=$(DOCKER_BUILD_IMAGE) \
 	--build-arg DOCKER_BASE_IMAGE=$(DOCKER_BASE_IMAGE) \
 	. -f build/Dockerfile -t $(DOCKER_IMAGE)
 
-.PHONY: build-linux
-## build-linux: builds linux binary
-build-linux:
-	@echo Building binary for linux for App
-	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 $(GO) build -ldflags $(LDFLAGS) -gcflags all=-trimpath=$(PWD) -asmflags all=-trimpath=$(PWD) -a -installsuffix cgo -o build/_output/bin/ponos-app-linux-amd64 ./cmd/app
-	@echo Building binary for linux for Server
-	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 $(GO) build -ldflags $(LDFLAGS) -gcflags all=-trimpath=$(PWD) -asmflags all=-trimpath=$(PWD) -a -installsuffix cgo -o build/_output/bin/ponos-server-linux-amd64 ./cmd/server
+.PHONY: docker-login
+## docker-login: docker login to registry
+docker-login:
+	@echo Docker login
+	echo $(DOCKER_PASSWORD) | docker login --username $(DOCKER_USERNAME) --password-stdin
 
-.PHONY: build
-## build: build the executable
-build:
-	@echo Building for local use only
-	$(GO) build -o build/_output/bin/ponos ./cmd/
+.PHONY: docker-push
+## docker-push: push the docker image
+docker-push: docker-login
+	@echo Taging Pushing Ponos Serve Docker Image
+	docker push mattermost/mattermost-ponos-service:${TAG}
 
 .PHONY: check-modules
 ## check-modules: Check outdated modules
@@ -73,7 +86,7 @@ clean:
 
 .PHONY: dist
 ## dist-aws: creates the bundle file for AWS Lambda deployments
-dist: build-linux
+dist: build
 	@echo Building dist for AWS Lambda
 	cp -r static dist
 	cp manifest.json dist/
@@ -95,29 +108,17 @@ govet:
 	$(GO) vet ./...
 	@echo Govet success
 
-.PHONY: push-docker-pr
-## push-docker-pr: Pushes the Docker image for the particular PR
-push-docker-pr:
-	@echo Pushing Docker Image for pull request
-	sh -c "./scripts/push_docker_pr.sh"
-
 .PHONY: lint
 ## lint: Run golangci-lint on codebase
 lint:
 	@echo Running lint with GolangCI
 	docker run --rm -v $(PWD):/app -w /app ${GO_IMAGE_LINT} golangci-lint run --timeout=5m
 
-.PHONY: push-docker
-## push-docker: Pushes the Docker image 
-push-docker:
-	@echo Pushing Docker Image
-	sh -c "./scripts/push_docker.sh"
-
 .PHONY: run
 ## run: runs the service
-run: build
+run: build-local
 	@echo Running chaos engine with debug
-	build/_output/bin/ponos
+	build/_output/bin/ponos-${BUILD_SERVICE}
 
 .PHONY: test
 ## test: tests all packages
