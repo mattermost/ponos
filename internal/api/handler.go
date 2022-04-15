@@ -21,7 +21,6 @@ func (h ContextHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	context := h.context.Clone()
 	context.RequestID = model.NewID()
 	context.Logger = context.Logger.WithFields(log.Fields{
-		"path":    r.URL.Path,
 		"request": context.RequestID,
 	})
 

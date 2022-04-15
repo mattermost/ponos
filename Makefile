@@ -105,7 +105,7 @@ push-docker-pr:
 ## lint: Run golangci-lint on codebase
 lint:
 	@echo Running lint with GolangCI
-	docker run --rm -v $(PWD):/app -w /app ${GO_IMAGE_LINT} golangci-lint run --timeout=1m
+	docker run --rm -v $(PWD):/app -w /app ${GO_IMAGE_LINT} golangci-lint run --timeout=5m
 
 .PHONY: push-docker
 ## push-docker: Pushes the Docker image 

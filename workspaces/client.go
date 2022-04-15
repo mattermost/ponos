@@ -5,13 +5,11 @@ import (
 	"net/http"
 
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 )
 
 type WorkspaceClient struct {
 	URL    string
 	client *http.Client
-	logger logrus.FieldLogger
 }
 
 // NewHTTPClient creates a workspace HTTP client for managing workspace
