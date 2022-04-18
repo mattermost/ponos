@@ -15,7 +15,7 @@ func (a *App) deleteWorkspaceHandler(creq app.CallRequest) (string, error) {
 	if err != nil {
 		return "", errors.Wrap(err, "failed to get config")
 	}
-	client := api.NewPonosClient("as", cfg.PonosURL)
+	client := api.NewPonosClient(cfg.Token, cfg.PonosURL)
 
 	if err := client.DeleteWorkspace(workspaces.DeleteWorkspaceRequest{
 		Name: dns,

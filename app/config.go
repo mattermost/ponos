@@ -1,8 +1,6 @@
 package app
 
 import (
-	"fmt"
-
 	"github.com/pkg/errors"
 )
 
@@ -63,8 +61,6 @@ type UsersAccess struct {
 // IsAllowed if user allowed
 func (ua *UsersAccess) IsAllowed(userID string) bool {
 	for _, id := range ua.UserIDS {
-		fmt.Println(id)
-		fmt.Println(userID)
 		if id == userID {
 			return true
 		}

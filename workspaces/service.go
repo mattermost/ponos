@@ -33,5 +33,8 @@ func (s *Service) DeleteWorkspace(dnsName string) error {
 	if err != nil {
 		return errors.Wrap(err, "failed to get installation by DNS")
 	}
+	if installation == nil {
+		return errors.New("failed to found an installation with provided DNS name")
+	}
 	return s.workspaceClient.DeleteWorkspace(installation.ID)
 }

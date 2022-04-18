@@ -40,7 +40,7 @@ func Init(mode string, r *mux.Router, log utils.Logger) {
 	app.HandleCall("/form/delete-workspace", goapp.RequireConnectedUsers(goapp.FormHandler(app.deleteWorkspaceFormHandler)))
 
 	// Cloud migration handlers
-	app.HandleCall("/migrations/create", goapp.RequireConnectedUsers(goapp.CallHandler(app.createMigrationHandler)))
-	app.HandleCall("/form/delete-workspace", goapp.RequireConnectedUsers(goapp.FormHandler(app.createMigrationFormHandler)))
+	app.HandleCall("/migrations/manage", goapp.RequireConnectedUsers(goapp.CallHandler(app.createMigrationHandler)))
+	app.HandleCall("/form/delete-migration", goapp.RequireConnectedUsers(goapp.FormHandler(app.createMigrationFormHandler)))
 
 }

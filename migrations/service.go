@@ -25,13 +25,12 @@ func NewService(logger log.FieldLogger) *Service {
 // CreateMigrationInfra creates the necessary AWS IAM, bucket folder
 // so the migration resources are ready to be used.
 func (s *Service) CreateMigrationInfra(dto *CustomerMigrationRequest) error {
-	s.logger.Info("starting migration infra")
-
 	tf, err := terraform.New(templateDirMigrations, os.Getenv("PONOS_TERRAFORM_STATE_STORE"), s.logger)
 	if err != nil {
 		return errors.Wrap(err, "failed to create Terraform commander")
 	}
 
+	s.logger.Info("starting migration infra")
 	stateObject := fmt.Sprintf("customer-migration-%s", dto.BucketFolder)
 	if err = tf.Init(stateObject); err != nil {
 		return errors.Wrap(err, "failed to run Terraform init")
@@ -54,13 +53,12 @@ func (s *Service) CreateMigrationInfra(dto *CustomerMigrationRequest) error {
 // DeleteMigrationInfra creates the necessary AWS IAM, bucket folder
 // so the migration resources are total removed from our infrastructure.
 func (s *Service) DeleteMigrationInfra(dto *CustomerMigrationRequest) error {
-	s.logger.Info("destroying migration infra")
-
 	tf, err := terraform.New(templateDirMigrations, os.Getenv("PONOS_TERRAFORM_STATE_STORE"), s.logger)
 	if err != nil {
 		return errors.Wrap(err, "failed to create Terraform commander")
 	}
 
+	s.logger.Info("destroying migration infra")
 	stateObject := fmt.Sprintf("customer-migration-%s", dto.BucketFolder)
 	if err = tf.Init(stateObject); err != nil {
 		return errors.Wrap(err, "failed to run Terraform init")
@@ -73,7 +71,7 @@ func (s *Service) DeleteMigrationInfra(dto *CustomerMigrationRequest) error {
 	if dto.Apply {
 		s.logger.Info("destroying migration infra")
 		if err := tf.Destroy(dto.toTerraformArgs()...); err != nil {
-			return errors.Wrap(err, "failed to apply migration infra")
+			return errors.Wrap(err, "failed to destroy migration infra")
 		}
 		s.logger.Info("successfully ran Terraform destroy")
 	}

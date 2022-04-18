@@ -34,7 +34,7 @@ func (c *WorkspaceClient) DeleteWorkspace(installationID string) error {
 	if err != nil {
 		return errors.Wrap(err, "failed to delete a workspace")
 	}
-	if resp.StatusCode > 400 && resp.StatusCode < 500 {
+	if resp.StatusCode >= 400 && resp.StatusCode <= 500 {
 		return errors.New("failed to delete because of a bad request")
 	}
 	return nil

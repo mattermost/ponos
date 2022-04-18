@@ -52,7 +52,7 @@ func (c *PonosClient) CreateMiration(data migrations.CustomerMigrationRequest) e
 	endpoint := fmt.Sprintf("%s/migrations", c.url)
 	req, err := http.NewRequest("POST", endpoint, bytes.NewBuffer(body))
 	if err != nil {
-		return errors.Wrap(err, "failed to create a request to delete a workspace")
+		return errors.Wrap(err, "failed to create a request to create a migration")
 	}
 	return c.do(req)
 }
@@ -64,12 +64,12 @@ func (c *PonosClient) CreateMiration(data migrations.CustomerMigrationRequest) e
 func (c *PonosClient) DeleteMiration(data migrations.CustomerMigrationRequest) error {
 	body, err := json.Marshal(data)
 	if err != nil {
-		return errors.Wrap(err, "failed to parse create migration request payload")
+		return errors.Wrap(err, "failed to parse delete migration request payload")
 	}
 	endpoint := fmt.Sprintf("%s/migrations", c.url)
 	req, err := http.NewRequest("DELETE", endpoint, bytes.NewBuffer(body))
 	if err != nil {
-		return errors.Wrap(err, "failed to create a request to delete a workspace")
+		return errors.Wrap(err, "failed to create a request to delete a migration")
 	}
 	return c.do(req)
 }
@@ -77,9 +77,9 @@ func (c *PonosClient) DeleteMiration(data migrations.CustomerMigrationRequest) e
 func (c *PonosClient) do(req *http.Request) error {
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return errors.Wrap(err, "failed to delete a workspace")
+		return errors.Wrap(err, "failed to make a request to ponos service")
 	}
-	if resp.StatusCode > 400 && resp.StatusCode < 500 {
+	if resp.StatusCode >= 400 && resp.StatusCode <= 500 {
 		return errors.New("failed because of a bad request")
 	}
 	return nil

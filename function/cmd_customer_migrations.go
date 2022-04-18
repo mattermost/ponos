@@ -94,7 +94,7 @@ func (a *App) createMigrationForm(creq app.CallRequest) *apps.Form {
 				Type:       apps.FieldTypeBool,
 			},
 		},
-		Submit: apps.NewCall("/migrations/create").
+		Submit: apps.NewCall("/migrations/manage").
 			WithState(map[string]string{
 				"bucket":        creq.GetValue("bucket", ""),
 				"bucket_folder": creq.GetValue("bucket_folder", ""),
