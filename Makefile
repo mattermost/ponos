@@ -26,7 +26,7 @@ MAKEFLAGS     += --warn-undefined-variables
 
 # App Code location
 CONFIG_APP_CODE         += ./cmd/${BUILD_SERVICE}
-BUILD_SERVICE           ?= server
+BUILD_SERVICE           ?= app
 
 ## Docker Variables
 # Docker executable
@@ -82,6 +82,7 @@ GITHUB_TOKEN                 ?= a_token
 GITHUB_ORG                   := mattermost
 # Most probably the name of the repo
 GITHUB_REPO                  := ${APP_NAME}
+
 
 # ====================================================================================
 # Colors
@@ -358,3 +359,13 @@ clean: ## to clean-up
 	@$(INFO) cleaning /${GO_OUT_BIN_DIR} folder...
 	$(AT)rm -rf ${GO_OUT_BIN_DIR} || ${FAIL}
 	@$(OK) cleaning /${GO_OUT_BIN_DIR} folder
+
+.PHONY: dist
+dist: go-build ## to create the bundle file for AWS Lambda deployments
+	@$(INFO) Building dist for AWS Lambda ...
+	$(AT)cp -r static dist || ${FAIL}
+	$(AT)cp manifest.json dist/ || ${FAIL}
+	$(AT)mv dist/app-ponos-linux-amd64 dist/ponos || ${FAIL}
+	$(AT)cd dist/; zip -qr go-function ponos; zip -r bundle.zip go-function.zip manifest.json static || ${FAIL}
+	@$(OK) Building dist for AWS Lambda ...
+
