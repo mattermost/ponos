@@ -323,7 +323,7 @@ go-lint: ## to lint go code
 	-e GOCACHE="/tmp" \
 	-e GOLANGCI_LINT_CACHE="/tmp" \
 	${DOCKER_IMAGE_GOLINT} \
-	golangci-lint run ./... || ${FAIL}
+	golangci-lint run ./... --timeout=10m || ${FAIL}
 	@$(OK) App linting
 
 .PHONY: go-fmt
