@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
 
       - name: ci/check-style
-        run: make check-style
+        run: make lint
 
   test:
     runs-on: ubuntu-latest
@@ -32,14 +32,3 @@ jobs:
 
       - name: ci/test
         run: make test
-
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
-      - name: ci/build
-        run: make docker-build
