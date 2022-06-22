@@ -16,6 +16,7 @@
 
 # VSCode
 .history
+.vscode
 
 # Bin
 build/_output/*
