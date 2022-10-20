@@ -1,0 +1,10 @@
+name: "CodeQL config"
+
+query-filters:
+  - exclude:
+      problem.severity:
+        - warning
+        - recommendation
+
+paths-ignore:
+  - '**/*_test.go'
