@@ -9,6 +9,7 @@ func Create(rootRouter *mux.Router, context *Context) *mux.Router {
 
 	AddMigrationsAPI(router, context)
 	AddWorkspacesAPI(router, context)
+	AddModeratedRequestsAPI(router, context)
 
 	return router
 }

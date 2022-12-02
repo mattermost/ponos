@@ -6,6 +6,8 @@ services:
       POSTGRES_USER: ponos_dev_user
       POSTGRES_DB: ponos_dev
       POSTGRES_PASSWORD: ponos_dev_password
+    ports:
+    - "5432:5432"
     volumes:
     - pgdata:/var/lib/postgresql
 volumes:

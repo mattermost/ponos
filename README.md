@@ -24,6 +24,7 @@ export PONOS_KMS_KEY="<aws-kms-id-for-testing>"
 export PONOS_PROVISIONER_ADDRESS=<your-provisioner-url>
 export PONOS_WORKSPACES_ADDRESS=<your-workspaces-url>
 export BUILD_SERVICE=server
+export DB_DSN="host=<db host> user=<db user> password=<db user's password> dbname=<db name>"
 make run
 ```
 
