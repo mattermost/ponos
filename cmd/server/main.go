@@ -33,13 +33,19 @@ func main() {
 		return
 	}
 
-	db, err := gorm.Open(postgres.Open(os.Getenv("DB_DSN")), &gorm.Config{})
-
-	// TODO (pantelis.vratsalis): Good for now, but in the long run we want a db migration tool
-	db.Table("moderated_requests").AutoMigrate(&moderated_requests.ModeratedRequest{})
+	db, err := gorm.Open(postgres.Open(os.Getenv("PONOS_DB_DSN")), &gorm.Config{})
 
 	if err != nil {
 		logger.Error("failed to start, could not connect to the database")
+		os.Exit(1)
+		return
+	}
+
+	// TODO (pantelis.vratsalis): Good for now, but in the long run we want a db migration tool
+	migrateError := db.Table("moderated_requests").AutoMigrate(&moderated_requests.ModeratedRequest{})
+
+	if migrateError != nil {
+		logger.Error("failed to start, could not run database migrations")
 		os.Exit(1)
 		return
 	}
@@ -52,7 +58,6 @@ func main() {
 	router := mux.NewRouter()
 
 	api.Create(router, &api.Context{
-		Db:                       db,
 		Logger:                   logger,
 		WorkspaceService:         workspaceSvc,
 		MigrationsService:        migrationsSvc,

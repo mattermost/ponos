@@ -26,12 +26,18 @@ func createRequest(c *Context, w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&body)
 
 	if err != nil {
-		json.NewEncoder(w).Encode(map[string]string{"error": "Invalid request structure."})
+		c.Logger.WithError(err).Error("Invalid create moderated request payload")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	c.ModeratedRequestsService.CreateRequest(body)
+	createRequestError := c.ModeratedRequestsService.CreateRequest(body)
+
+	if createRequestError != nil {
+		c.Logger.WithError(err).Error("Could not create moderated request")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)

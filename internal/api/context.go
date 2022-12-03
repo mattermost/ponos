@@ -5,7 +5,6 @@ import (
 	"github.com/mattermost/ponos/moderated_requests"
 	"github.com/mattermost/ponos/workspaces"
 	log "github.com/sirupsen/logrus"
-	"gorm.io/gorm"
 )
 
 // Context provides the API with all necessary data and interfaces for responding to requests.
@@ -16,7 +15,6 @@ type Context struct {
 	WorkspaceService         *workspaces.Service
 	MigrationsService        *migrations.Service
 	ModeratedRequestsService *moderated_requests.Service
-	Db                       *gorm.DB
 	Logger                   log.FieldLogger
 }
 

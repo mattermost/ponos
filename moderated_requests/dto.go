@@ -3,15 +3,15 @@ package moderated_requests
 type Kind = string
 
 const (
-	DeleteWorkspace = "DELETE_WORKSPACE"
+	DeleteWorkspace Kind = "DELETE_WORKSPACE"
 )
 
 type State = string
 
 const (
-	Pending  = "PENDING"
-	Rejected = "REJECTED"
-	Approved = "APPROVED"
+	Pending  State = "PENDING"
+	Rejected State = "REJECTED"
+	Approved State = "APPROVED"
 )
 
 type Payload = map[string]interface{}
