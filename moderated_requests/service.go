@@ -44,3 +44,10 @@ func (s *Service) CreateRequest(req ModeratedRequestData) error {
 
 	return nil
 }
+
+func (s *Service) GetRequests() ([]ModeratedRequest, error) {
+	var requests []ModeratedRequest
+	result := s.db.Find(&requests)
+
+	return requests, result.Error
+}
