@@ -28,6 +28,10 @@ func (s *Service) CreateRequest(req ModeratedRequestData) error {
 		return err
 	}
 
+	if err := req.Validate(); err != nil {
+		return err
+	}
+
 	result := s.db.Create(&ModeratedRequest{
 		Kind:  req.Kind,
 		State: Pending,

@@ -34,7 +34,7 @@ func createRequest(c *Context, w http.ResponseWriter, r *http.Request) {
 	createRequestError := c.ModeratedRequestsService.CreateRequest(body)
 
 	if createRequestError != nil {
-		c.Logger.WithError(err).Error("Could not create moderated request")
+		c.Logger.WithError(createRequestError).Error("Could not create moderated request")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
