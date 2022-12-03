@@ -41,15 +41,6 @@ func main() {
 		return
 	}
 
-	// TODO (pantelis.vratsalis): Good for now, but in the long run we want a db migration tool
-	migrateError := db.Table("moderated_requests").AutoMigrate(&moderated_requests.ModeratedRequest{})
-
-	if migrateError != nil {
-		logger.Error("failed to start, could not run database migrations")
-		os.Exit(1)
-		return
-	}
-
 	provisionerClient := cmodel.NewClient(provisionerURL)
 	workspaceClient := workspaces.NewHTTPClient(workspacesURL, http.DefaultClient)
 	workspaceSvc := workspaces.NewService(provisionerClient, workspaceClient, logger)

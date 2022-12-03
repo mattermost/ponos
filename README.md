@@ -40,6 +40,15 @@ by using the following as the databases's DSN:
 export PONOS_DB_DSN="host=localhost user=ponos_dev_user password=ponos_dev_password dbname=ponos_dev"
 ```
 
+In order to run all database migrations locally, you can use:
+
+```
+make goose COMMAND="up"
+```
+
+which uses the goose migration tool under the hood. All goose commands are available.
+
+
 For Ponos `ChatOps` Mattermost App you need to run the following:
 
 ```bash
