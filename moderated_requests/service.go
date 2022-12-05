@@ -3,6 +3,7 @@ package moderated_requests
 import (
 	"encoding/json"
 
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
@@ -25,11 +26,11 @@ func (s *Service) CreateRequest(req ModeratedRequestData) error {
 	data, err := json.Marshal(req.Data)
 
 	if err != nil {
-		return err
+		return errors.Wrap(err, "Failed to read moderated request")
 	}
 
 	if err := req.Validate(); err != nil {
-		return err
+		return errors.Wrap(err, "Validation failed")
 	}
 
 	result := s.db.Create(&ModeratedRequest{
@@ -39,7 +40,7 @@ func (s *Service) CreateRequest(req ModeratedRequestData) error {
 	})
 
 	if result.Error != nil {
-		return result.Error
+		return errors.Wrap(result.Error, "Failed to persist moderated request")
 	}
 
 	return nil
@@ -49,5 +50,5 @@ func (s *Service) GetRequests() ([]ModeratedRequest, error) {
 	var requests []ModeratedRequest
 	result := s.db.Find(&requests)
 
-	return requests, result.Error
+	return requests, errors.Wrap(result.Error, "Failed to retrieve moderated requests")
 }
