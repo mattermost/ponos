@@ -34,8 +34,8 @@ func (s *Service) CreateRequest(req ModeratedRequestData) error {
 	}
 
 	result := s.db.Create(&ModeratedRequest{
-		Kind:  req.Kind,
-		State: Pending,
+		Kind:  req.Kind.String(),
+		State: Pending.String(),
 		Data:  datatypes.JSON(data),
 	})
 

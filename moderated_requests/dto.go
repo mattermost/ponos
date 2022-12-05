@@ -5,19 +5,36 @@ import (
 	"github.com/pkg/errors"
 )
 
-type Kind = string
+type Kind string
 
 const (
 	DeleteWorkspace Kind = "WORKSPACES_DELETE"
 )
 
-type State = string
+func (k Kind) isValid() bool {
+	switch k {
+	case DeleteWorkspace:
+		return true
+	default:
+		return false
+	}
+}
+
+func (k Kind) String() string {
+	return string(k)
+}
+
+type State string
 
 const (
 	Pending  State = "PENDING"
 	Rejected State = "REJECTED"
 	Approved State = "APPROVED"
 )
+
+func (s State) String() string {
+	return string(s)
+}
 
 type Payload = map[string]interface{}
 
@@ -38,15 +55,5 @@ func (s *ModeratedRequestData) Validate() error {
 }
 
 func kind(f validator.FieldLevel) bool {
-	validKinds := []string{
-		DeleteWorkspace,
-	}
-
-	for _, v := range validKinds {
-		if f.Field().String() == v {
-			return true
-		}
-	}
-
-	return false
+	return Kind(f.Field().String()).isValid()
 }
