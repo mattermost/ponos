@@ -13,7 +13,10 @@ import (
 	cmodel "github.com/mattermost/mattermost-cloud/model"
 	"github.com/mattermost/ponos/internal/api"
 	"github.com/mattermost/ponos/migrations"
+	"github.com/mattermost/ponos/moderated_requests"
 	"github.com/mattermost/ponos/workspaces"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 func main() {
@@ -29,17 +32,27 @@ func main() {
 		os.Exit(1)
 		return
 	}
+
+	db, err := gorm.Open(postgres.Open(os.Getenv("PONOS_DB_DSN")), &gorm.Config{})
+
+	if err != nil {
+		logger.Error("failed to start, could not connect to the database")
+		os.Exit(1)
+		return
+	}
+
 	provisionerClient := cmodel.NewClient(provisionerURL)
 	workspaceClient := workspaces.NewHTTPClient(workspacesURL, http.DefaultClient)
 	workspaceSvc := workspaces.NewService(provisionerClient, workspaceClient, logger)
 	migrationsSvc := migrations.NewService(logger)
-
+	moderatedRequestsSvc := moderated_requests.NewService(logger, db)
 	router := mux.NewRouter()
 
 	api.Create(router, &api.Context{
-		Logger:            logger,
-		WorkspaceService:  workspaceSvc,
-		MigrationsService: migrationsSvc,
+		Logger:                   logger,
+		WorkspaceService:         workspaceSvc,
+		MigrationsService:        migrationsSvc,
+		ModeratedRequestsService: moderatedRequestsSvc,
 	})
 
 	srv := &http.Server{

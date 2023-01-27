@@ -340,6 +340,10 @@ go-fmt: ## to perform formatting
 	$(AT)$(GO) fmt ./... || ${FAIL}
 	@$(OK) App code formatting...
 
+.PHONY: goose
+goose: ## DB migration tool
+	$(AT) $(GO) run github.com/pressly/goose/v3/cmd/goose@latest -dir db_migrations postgres "${PONOS_DB_DSN}" $(COMMAND) || ${FAIL}
+
 .PHONY: go-doc
 go-doc: ## to generate documentation
 	@$(INFO) Generating Documentation...
